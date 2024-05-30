@@ -1,5 +1,7 @@
 # Descripción
-Plantilla para crear la infraestructura usando aws cloudformation de una funcion lambda que es ejecutada usando un regla de expresión cron
+Plantilla para crear la infraestructura usando aws cloudformation de una funcion lambda que es ejecutada usando un regla de expresión cron.
+
+<img width="400px" src='https://github.com/CrissAlvarezH/aws-lambda-iac-template/blob/main/infra-diagram.png'/>
 
 # Scripts
 En el codigo puede encontrar un archivo `scripts.sh` el cual contiene el codigo necesario para deployar la infraestructura y manipularla
