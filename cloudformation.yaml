@@ -39,7 +39,7 @@ Resources:
       Type: AWS::Events::Rule
       Properties:
         Name: CronExecutionExampleLambda
-        ScheduleExpression: "cron(*/5 * * * ? *)"
+        ScheduleExpression: "cron(*/2 * * * ? *)"
         State: ENABLED
         Targets:
           - Id: ExecuteExampleLambda

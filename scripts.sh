@@ -27,8 +27,21 @@ elif [ "$action" = "package" ]; then
     [ -z "$filename" ] && echo "second arg filename is required" && exit 1
     [ -f "$filename" ] && echo "package '$filename' alredy exists, aborting." && exit 1
 
-    echo "creating package.zip"
-    zip -r "$filename" app
+    echo "creating package"
+
+    # package dependencies
+    poetry export --without-hashes --format=requirements.txt --output=requirements.txt
+    pip install -r requirements.txt --target ./package
+    cd ./package
+    zip -r "../$filename" .
+    cd ..
+
+    # include app in the package
+    zip -r $filename app
+
+    # cleanup
+    rm requirements.txt 
+    rm -r package
     echo "$filename created successfully"
 
 elif [ "$action" = "deploy" ]; then
@@ -42,6 +55,7 @@ elif [ "$action" = "deploy" ]; then
         --function-name lambda-example \
         --zip-file "fileb://$filename" \
         | cat
+
 else 
     echo "action '$action' not found"
     exit 1

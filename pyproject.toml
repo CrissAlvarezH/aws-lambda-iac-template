@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "lambda-example"
+version = "0.1.0"
+description = ""
+authors = ["Cristian Alvarez H <alvarezhernandezcristian1@gmail.com>"]
+readme = "README.md"
+packages = [{include = "lambda_example"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.32.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
