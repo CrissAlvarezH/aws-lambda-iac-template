@@ -18,7 +18,7 @@ Resources:
       Type: AWS::Logs::LogGroup
       Properties:
         LogGroupName: lambda-example-logs
-       
+
     Function:
       Type: AWS::Lambda::Function
       Properties:
@@ -27,11 +27,29 @@ Resources:
         Code:
           ZipFile: |
             # this code will be replaced after, it is just to create de lambda function
-            def main(event):
-              pass
+            def main(event, context):
+              print("empty lambda function")
         Role: !GetAtt FunctionRole.Arn
         Runtime: python3.10
         LoggingConfig:
           LogGroup: !Ref FunctionLogs
           LogFormat: Text
   
+    CronExecutionRule:
+      Type: AWS::Events::Rule
+      Properties:
+        Name: CronExecutionExampleLambda
+        ScheduleExpression: "cron(*/5 * * * ? *)"
+        State: ENABLED
+        Targets:
+          - Id: ExecuteExampleLambda
+            Arn: !GetAtt Function.Arn
+    
+    CronExecutionRulePermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        Action: "lambda:InvokeFunction"
+        FunctionName: !GetAtt Function.Arn
+        Principal: "events.amazonaws.com"
+        SourceArn: !GetAtt CronExecutionRule.Arn
+       
