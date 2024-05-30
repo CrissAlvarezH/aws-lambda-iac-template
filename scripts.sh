@@ -28,7 +28,7 @@ elif [ "$action" = "package" ]; then
     [ -f "$filename" ] && echo "package '$filename' alredy exists, aborting." && exit 1
 
     echo "creating package.zip"
-    zip "$filename" index.py
+    zip -r "$filename" app
     echo "$filename created successfully"
 
 elif [ "$action" = "deploy" ]; then

@@ -23,7 +23,7 @@ Resources:
       Type: AWS::Lambda::Function
       Properties:
         FunctionName: lambda-example
-        Handler: index.main
+        Handler: app.index.main
         Code:
           ZipFile: |
             # this code will be replaced after, it is just to create de lambda function
