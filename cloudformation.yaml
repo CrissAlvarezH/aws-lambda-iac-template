@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+
+    FunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument: 
+          Statement:
+            - Action: sts:AssumeRole
+              Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+        ManagedPolicyArns:
+             - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+          
+    FunctionLogs:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        LogGroupName: lambda-example-logs
+       
+    Function:
+      Type: AWS::Lambda::Function
+      Properties:
+        FunctionName: lambda-example
+        Handler: index.main
+        Code:
+          ZipFile: |
+            # this code will be replaced after, it is just to create de lambda function
+            def main(event):
+              pass
+        Role: !GetAtt FunctionRole.Arn
+        Runtime: python3.10
+        LoggingConfig:
+          LogGroup: !Ref FunctionLogs
+          LogFormat: Text
+  
