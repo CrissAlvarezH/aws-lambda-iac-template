@@ -7,4 +7,5 @@ LOG.setLevel(logging.INFO)
 
 def main(event, context):
     LOG.info("init main: hello")
+    LOG.debug("debug log")
     print("simple print")
