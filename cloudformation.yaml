@@ -1,10 +1,20 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
+Parameters:
+  LambdaName:
+    Default: "default-function-name"
+    Description: "Function lambda name"
+    Type: String
+    MinLength: "1"
+    MaxLength: "100"
+    AllowedPattern: ^[a-zA-Z][-a-zA-Z0-9]*
+
 Resources:
 
     FunctionRole:
       Type: AWS::IAM::Role
       Properties:
+        RoleName: !Join [ "-", [ !Ref LambdaName, "role" ] ]
         AssumeRolePolicyDocument: 
           Statement:
             - Action: sts:AssumeRole
@@ -17,12 +27,12 @@ Resources:
     FunctionLogs:
       Type: AWS::Logs::LogGroup
       Properties:
-        LogGroupName: lambda-example-logs
+        LogGroupName: !Join [ "-", [ !Ref LambdaName, "logs" ] ]
 
     Function:
       Type: AWS::Lambda::Function
       Properties:
-        FunctionName: lambda-example
+        FunctionName: !Ref LambdaName
         Handler: app.index.main
         Code:
           ZipFile: |
@@ -38,11 +48,11 @@ Resources:
     CronExecutionRule:
       Type: AWS::Events::Rule
       Properties:
-        Name: CronExecutionExampleLambda
+        Name: !Join [ "-", [ !Ref LambdaName, "execution-rule" ] ]
         ScheduleExpression: "cron(*/2 * * * ? *)"
         State: ENABLED
         Targets:
-          - Id: ExecuteExampleLambda
+          - Id: !Join [ "-", [ !Ref LambdaName, "rule-target" ] ]
             Arn: !GetAtt Function.Arn
     
     CronExecutionRulePermission:

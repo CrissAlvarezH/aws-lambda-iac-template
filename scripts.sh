@@ -1,24 +1,27 @@
 set -e
+LAMBDA_NAME="example-lambda"
 
 action=$1
 
 if [ "$action" = "setup-infra" ]; then
     aws cloudformation create-stack \
-        --stack-name example-lambda-app \
+        --stack-name "stack-$LAMBDA_NAME" \
         --template-body file://cloudformation.yaml \
+        --parameters "ParameterKey=LambdaName,ParameterValue=$LAMBDA_NAME" \
         --capabilities CAPABILITY_NAMED_IAM \
         | cat
 
 elif [ "$action" = "update-infra" ]; then
     aws cloudformation update-stack \
-        --stack-name example-lambda-app \
+        --stack-name "stack-$LAMBDA_NAME" \
         --template-body file://cloudformation.yaml \
+        --parameters "ParameterKey=LambdaName,ParameterValue=$LAMBDA_NAME" \
         --capabilities CAPABILITY_NAMED_IAM \
         | cat
 
 elif [ "$action" = "delete-infra" ]; then
     aws cloudformation delete-stack \
-        --stack-name example-lambda-app \
+        --stack-name "stack-$LAMBDA_NAME" \
         | cat
 
 elif [ "$action" = "package" ]; then
@@ -52,7 +55,7 @@ elif [ "$action" = "deploy" ]; then
     sh scripts.sh package "$filename"
 
     aws lambda update-function-code \
-        --function-name lambda-example \
+        --function-name "$LAMBDA_NAME" \
         --zip-file "fileb://$filename" \
         | cat
 
