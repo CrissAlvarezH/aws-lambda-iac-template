@@ -1,5 +1,6 @@
 set -e
 LAMBDA_NAME="example-lambda"
+CRON_EXECUTION_EXPRESSION="*/5 * * * ? *"
 
 action=$1
 
@@ -7,7 +8,7 @@ if [ "$action" = "setup-infra" ]; then
     aws cloudformation create-stack \
         --stack-name "stack-$LAMBDA_NAME" \
         --template-body file://cloudformation.yaml \
-        --parameters "ParameterKey=LambdaName,ParameterValue=$LAMBDA_NAME" \
+        --parameters ParameterKey=LambdaName,ParameterValue="$LAMBDA_NAME" ParameterKey=CronExecutionExpression,ParameterValue="$CRON_EXECUTION_EXPRESSION" \
         --capabilities CAPABILITY_NAMED_IAM \
         | cat
 
@@ -15,7 +16,7 @@ elif [ "$action" = "update-infra" ]; then
     aws cloudformation update-stack \
         --stack-name "stack-$LAMBDA_NAME" \
         --template-body file://cloudformation.yaml \
-        --parameters "ParameterKey=LambdaName,ParameterValue=$LAMBDA_NAME" \
+        --parameters ParameterKey=LambdaName,ParameterValue="$LAMBDA_NAME" ParameterKey=CronExecutionExpression,ParameterValue="$CRON_EXECUTION_EXPRESSION" \
         --capabilities CAPABILITY_NAMED_IAM \
         | cat
 
