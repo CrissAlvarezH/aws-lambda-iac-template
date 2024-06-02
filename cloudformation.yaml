@@ -29,7 +29,7 @@ Resources:
               Principal:
                 Service: lambda.amazonaws.com
         ManagedPolicyArns:
-             - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
           
     FunctionLogs:
       Type: AWS::Logs::LogGroup
@@ -55,6 +55,7 @@ Resources:
     CronExecutionRule:
       Type: AWS::Events::Rule
       Properties:
+        Description: "Cron to execute lambda"
         Name: !Join [ "-", [ !Ref LambdaName, "execution-rule" ] ]
         ScheduleExpression: !Join [ "", [ "cron(", !Ref CronExecutionExpression, ")" ]]
         State: ENABLED
