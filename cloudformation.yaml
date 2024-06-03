@@ -16,6 +16,13 @@ Parameters:
     MinLength: "10"
     MaxLength: "30"
 
+  Timeout:
+    Default: "3"
+    Description: "Cron execution expression"
+    Type: Number
+    MinValue: "1"
+    MaxValue: "900"
+
 Resources:
 
     FunctionRole:
@@ -48,9 +55,23 @@ Resources:
               print("empty lambda function")
         Role: !GetAtt FunctionRole.Arn
         Runtime: python3.10
+        Timeout: !Ref Timeout
         LoggingConfig:
           LogGroup: !Ref FunctionLogs
           LogFormat: Text
+
+    FunctionTemplateVersion:
+      Type: AWS::Lambda::Version
+      Properties:
+        FunctionName: !Ref Function
+        Description: "First version (just template, without production code)"
+
+    FunctionProdAlias:
+      Type: AWS::Lambda::Alias
+      Properties:
+        FunctionName: !Ref Function
+        FunctionVersion: !GetAtt FunctionTemplateVersion.Version
+        Name: prod
   
     CronExecutionRule:
       Type: AWS::Events::Rule
@@ -61,13 +82,13 @@ Resources:
         State: ENABLED
         Targets:
           - Id: !Join [ "-", [ !Ref ProjectName, "rule-target" ] ]
-            Arn: !GetAtt Function.Arn
+            Arn: !Ref FunctionProdAlias
     
     CronExecutionRulePermission:
       Type: AWS::Lambda::Permission
       Properties:
         Action: "lambda:InvokeFunction"
-        FunctionName: !GetAtt Function.Arn
+        FunctionName: !Ref FunctionProdAlias
         Principal: "events.amazonaws.com"
         SourceArn: !GetAtt CronExecutionRule.Arn
        
