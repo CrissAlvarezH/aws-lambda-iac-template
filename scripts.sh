@@ -1,28 +1,28 @@
 set -e
-LAMBDA_NAME="example-lambda"
+PROJECT_NAME="example-lambda"
 CRON_EXECUTION_EXPRESSION="*/5 * * * ? *"
 
 action=$1
 
 if [ "$action" = "setup-infra" ]; then
     aws cloudformation create-stack \
-        --stack-name "stack-$LAMBDA_NAME" \
+        --stack-name "$PROJECT_NAME-stack" \
         --template-body file://cloudformation.yaml \
-        --parameters ParameterKey=LambdaName,ParameterValue="$LAMBDA_NAME" ParameterKey=CronExecutionExpression,ParameterValue="$CRON_EXECUTION_EXPRESSION" \
+        --parameters ParameterKey=ProjectName,ParameterValue="$PROJECT_NAME" ParameterKey=CronExecutionExpression,ParameterValue="$CRON_EXECUTION_EXPRESSION" \
         --capabilities CAPABILITY_NAMED_IAM \
         | cat
 
 elif [ "$action" = "update-infra" ]; then
     aws cloudformation update-stack \
-        --stack-name "stack-$LAMBDA_NAME" \
+        --stack-name "$PROJECT_NAME-stack" \
         --template-body file://cloudformation.yaml \
-        --parameters ParameterKey=LambdaName,ParameterValue="$LAMBDA_NAME" ParameterKey=CronExecutionExpression,ParameterValue="$CRON_EXECUTION_EXPRESSION" \
+        --parameters ParameterKey=ProjectName,ParameterValue="$PROJECT_NAME" ParameterKey=CronExecutionExpression,ParameterValue="$CRON_EXECUTION_EXPRESSION" \
         --capabilities CAPABILITY_NAMED_IAM \
         | cat
 
 elif [ "$action" = "delete-infra" ]; then
     aws cloudformation delete-stack \
-        --stack-name "stack-$LAMBDA_NAME" \
+        --stack-name "$PROJECT_NAME-stack" \
         | cat
 
 elif [ "$action" = "package" ]; then
@@ -56,7 +56,7 @@ elif [ "$action" = "deploy" ]; then
     sh scripts.sh package "$filename"
 
     aws lambda update-function-code \
-        --function-name "$LAMBDA_NAME" \
+        --function-name "$PROJECT_NAME" \
         --zip-file "fileb://$filename" \
         | cat
 
