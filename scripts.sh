@@ -1,15 +1,5 @@
 set -e
 
-PROJECT_NAME="example-lambda"
-CRON_EXECUTION_EXPRESSION="*/5 * * * ? *"
-TIMEOUT=10
-
-action=$1
-
-function latest_commit() {
-    echo "$(git log --oneline -1 | awk '{print $1}')"
-}
-
 function log() {
   GREEN='\033[0;32m'
   YELLOW="\033[0;33m"
@@ -22,6 +12,25 @@ function log() {
   fi
 
   printf "\n${color}$1${COLOR_OFF}\n"
+}
+
+function read_env_var() {
+    name=$1
+    echo "$(cat .env | grep $name | awk -F \= '{print $2}' | sed 's/"//g')"
+}
+
+PROJECT_NAME=$(read_env_var "PROJECT_NAME")
+CRON_EXECUTION_EXPRESSION=$(read_env_var "CRON_EXECUTION_EXPRESSION")
+TIMEOUT=$(read_env_var "TIMEOUT")
+
+log "PROJECT_NAME=$PROJECT_NAME"
+log "CRON_EXECUTION_EXPRESSION=$CRON_EXECUTION_EXPRESSION"
+log "TIMEOUT=$TIMEOUT"
+
+action=$1
+
+function latest_commit() {
+    echo "$(git log --oneline -1 | awk '{print $1}')"
 }
 
 if [ "$action" = "setup-infra" ]; then
@@ -108,6 +117,7 @@ elif [ "$action" = "deploy" ]; then
         | cat
 
     log "deploy finished"
+
 else 
     log "action '$action' not found" "warn"
     exit 1
