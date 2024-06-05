@@ -23,10 +23,6 @@ PROJECT_NAME=$(read_env_var "PROJECT_NAME")
 CRON_EXECUTION_EXPRESSION=$(read_env_var "CRON_EXECUTION_EXPRESSION")
 TIMEOUT=$(read_env_var "TIMEOUT")
 
-log "PROJECT_NAME=$PROJECT_NAME"
-log "CRON_EXECUTION_EXPRESSION=$CRON_EXECUTION_EXPRESSION"
-log "TIMEOUT=$TIMEOUT"
-
 action=$1
 
 function latest_commit() {
@@ -34,6 +30,10 @@ function latest_commit() {
 }
 
 if [ "$action" = "setup-infra" ]; then
+    log "PROJECT_NAME=$PROJECT_NAME"
+    log "CRON_EXECUTION_EXPRESSION=$CRON_EXECUTION_EXPRESSION"
+    log "TIMEOUT=$TIMEOUT"
+
     aws cloudformation create-stack \
         --stack-name "$PROJECT_NAME-stack" \
         --template-body file://cloudformation.yaml \
