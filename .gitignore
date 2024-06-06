@@ -2,4 +2,5 @@ package*.zip
 .DS_Store
 .venv
 __pycache__
-.env
+.env.app
+.env.infra

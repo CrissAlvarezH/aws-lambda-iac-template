@@ -1,6 +1,11 @@
 import requests
 
-def get_ditto_abilities():
-    res = requests.get("https://pokeapi.co/api/v2/pokemon/ditto")
+def get_pokemon_abilities(name: str):
+    res = requests.get(f"https://pokeapi.co/api/v2/pokemon/{name}")
 
     return [a.get("ability").get("name") for a in res.json().get("abilities", [])]
+
+
+def get_specie_happiness(specie: str):
+    res = requests.get(f"https://pokeapi.co/api/v2/pokemon-species/{specie}")
+    return res.json().get("base_happiness")

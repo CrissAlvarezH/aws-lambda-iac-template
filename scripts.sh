@@ -16,7 +16,7 @@ function log() {
 
 function read_env_var() {
     name=$1
-    echo "$(cat .env | grep $name | awk -F \= '{print $2}' | sed 's/"//g')"
+    echo "$(cat .env.infra | grep $name | awk -F \= '{print $2}' | sed 's/"//g')"
 }
 
 PROJECT_NAME=$(read_env_var "PROJECT_NAME")
@@ -82,6 +82,22 @@ elif [ "$action" = "package" ]; then
 
     log "$filename created successfully"
 
+elif [ "$action" = "upload-env" ]; then
+    if [ -f .env.app ]; then
+        log "uploading .env.app to function"
+
+        # convert format from .env.app to comma separated, like:
+        # VAR_1=1234,VAR_2=abc,VAR_3=xyz
+        vars=$(paste -s -d "," .env.app)
+
+        aws lambda update-function-configuration \
+            --function-name "$PROJECT_NAME" \
+            --environment "Variables={$vars}" \
+            | cat
+    else 
+        log "not '.env.app' found, continue without env vars"
+    fi
+
 elif [ "$action" = "deploy" ]; then
     commit=$(latest_commit)
     filename="package_$commit.zip"
@@ -115,6 +131,8 @@ elif [ "$action" = "deploy" ]; then
         --description "commit: $commit" \
         --name "prod" \
         | cat
+
+    sh scripts.sh upload-env
 
     log "deploy finished"
 
