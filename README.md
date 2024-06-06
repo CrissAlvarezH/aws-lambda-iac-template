@@ -3,6 +3,16 @@ Plantilla para crear la infraestructura usando aws cloudformation de una funcion
 
 <img width="400px" src='https://github.com/CrissAlvarezH/aws-lambda-iac-template/blob/main/infra-diagram.png'/>
 
+# Variables de entorno
+Encontrarás un archivo `.env.example` con el contenido mostrado a continuación, debes copiarlo y pegarlo en un archivo `.env` y 
+establecer los valores que te interesen.
+```
+PROJECT_NAME="example-lambda"
+CRON_EXECUTION_EXPRESSION="*/5 * * * ? *"
+TIMEOUT=10
+```
+Cada vez que ejecutes alguno de los siguientes scripts estas variables serán leidas y usadas para su ejecución.
+
 # Scripts
 En el codigo puede encontrar un archivo `scripts.sh` el cual contiene el codigo necesario para deployar la infraestructura y manipularla
 
@@ -10,13 +20,13 @@ En el codigo puede encontrar un archivo `scripts.sh` el cual contiene el codigo 
 
 `sh scripts.sh setup-infra`
 
-Este comando ejecuta un comando del `cli` de aws para crear el stack de cloud formation
+Este comando ejecuta un comando del `cli` de aws para crear el stack de cloudformation.
 
 ### Actualizar infraestructura
 
 `sh scripts.sh update-infra`
 
-En caso de que realice cambios en `cloudformation.yaml` para que estos se vean reflejados en el stack de aws, este comando ejecutará esos cambios
+En caso de que realice cambios en `cloudformation.yaml` para que estos se vean reflejados en el stack de aws puede utilizar este comando.
 
 ### Eliminar infraestructura
 
@@ -26,12 +36,15 @@ En caso de que realice cambios en `cloudformation.yaml` para que estos se vean r
 
 `sh scripts.sh deploy`
 
-Este comando tomará el codigo (en este caso python) y lo empaquetará en un archivo `.zip` usando como nombre el hash del ultimo commit, luego
-actualizará el codigo del lambda previamente creado usando este archivo comprimido.
-El nombre del package lleva la estructua `package_<commit-hash>.zip`
+Este comando realizará lo siguiente:
+1. Extraerá todas las dependencias del código para ser empaquetadas en un archivo llamado `package_<latest commit>.zip`
+2. Agregará el codigo de `/app` en el paquete
+3. Subirá este codigo empaquetado al lambda
+4. Publicará una nueva version del lambda
+5. Actualizará el alias **prod** para que apunte a la ultima versión
 
 ### Empaquetar aplicación
 
 `sh scripts.sh package <filename>`
 
-Crea un archivo comprimido del codigo con el nombre pasado como ultimo argumento, exportandolo en la raiz del proyecto.
+Crea un archivo comprimido del codigo y sus dependencias con el nombre pasado como ultimo argumento, exportandolo en la raiz del proyecto.
